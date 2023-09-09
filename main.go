@@ -17,6 +17,8 @@ var keyMap map[ebiten.Key]byte
 
 var audioPlayer *audio.Player
 
+type Game struct{}
+
 func setupKeys() {
 	keyMap = make(map[ebiten.Key]byte)
 	keyMap[ebiten.Key1] = 0x01
@@ -47,17 +49,17 @@ func init() {
 }
 
 func getInput() bool {
-	// for k, v := range keyMap {
-	// 	if ebiten.IsKeyPressed(k) {
-	// 		//			chip8.keys[v] = 0x01
-	// 		return true
-	// 	}
-	// }
+	for k, v := range keyMap {
+		if ebiten.IsKeyPressed(k) {
+			chip8.keys[v] = 0x01
+			return true
+		}
+	}
 
 	return false
 }
 
-func update(screen *ebiten.Image) error {
+func (s *Game) Update(screen *ebiten.Image) error {
 	// fill screen
 	screen.Fill(color.NRGBA{0x00, 0x00, 0x00, 0xFF})
 
@@ -103,6 +105,10 @@ func update(screen *ebiten.Image) error {
 	return nil
 }
 
+func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return 640, 320
+}
+
 func main() {
 	audioContext, _ := audio.NewContext(48000)
 	f, _ := ebitenutil.OpenFile("assets/beep.mp3")
@@ -115,7 +121,9 @@ func main() {
 	chip8 = NewCPU()
 	chip8.LoadProgram("roms/PONG")
 
-	if err := ebiten.Run(update, 640, 320, 1, "PONG"); err != nil {
+	ebiten.SetWindowSize(640, 320)
+	ebiten.SetWindowTitle("PONG")
+	if err := ebiten.RunGame(&Game{}); err != nil {
 		panic(err)
 	}
 }

@@ -103,7 +103,7 @@ func (c *CPU) Run() {
 
 func (c *CPU) RunCpuCycle() {
 	// instruction identifier
-	opcode := uint16(c.memory[c.pc]<<8 | c.memory[c.pc+1])
+	opcode := uint16(c.memory[c.pc])<<8 | uint16(c.memory[c.pc+1])
 
 	c.pc = c.pc + 2
 
